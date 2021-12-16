@@ -19,7 +19,6 @@ const App = () => {
       .getAll()
       .then(initialPeople => {
       setPeople(initialPeople);
-      console.log('hi hi hi new person added to list!')
     })
   }, []);
 

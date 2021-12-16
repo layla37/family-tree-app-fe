@@ -7,17 +7,30 @@ const FamilyMemberForm = ({
   }) => {
   const [newPersonName, setNewPersonName] = useState('');
   const [newPersonBio, setNewPersonBio] = useState('');
+  const [newPersonParent1, setNewPersonParent1] = useState('');
+  const [newPersonParent2, setNewPersonParent2] = useState('');
   const [newPersonPartner, setNewPersonPartner] = useState('');
-  const [newPersonParents, setNewPersonParents] = useState([]);
   const [newPersonChildren, setNewPersonChildren] = useState([]);
 
   const resetNewPersonFields = () => {
     setNewPersonName('');
     setNewPersonBio('');
     setNewPersonPartner('');
-    setNewPersonParents([]);
     setNewPersonChildren([]);
   };
+
+  const getParentsArray = () => {
+    const parentsArray = [];
+
+    if (newPersonParent1) parentsArray.push(newPersonParent1);
+    if (newPersonParent2) parentsArray.push(newPersonParent2);
+
+    if (parentsArray.length === 0) {
+       return null;
+    }
+
+    return parentsArray;
+  }
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -25,7 +38,7 @@ const FamilyMemberForm = ({
     const personObject = {
       name: newPersonName,
       bio: newPersonBio,
-      parents: newPersonParents, // via dropdown list of names of people already added to DB
+      parents: getParentsArray(), // via dropdown list of names of people already added to DB
       children: newPersonChildren, // via dropdown list of names of people already added to DBc
       partner: newPersonPartner
     }
@@ -39,27 +52,47 @@ const FamilyMemberForm = ({
   };
 
   const handlePersonNameChange = (event) => {
-    console.log(event.target.value);
     setNewPersonName(event.target.value);
   };
 
   const handlePersonBioChange = (event) => {
-    console.log(event.target.value);
     setNewPersonBio(event.target.value);
   };
 
   return (
     <form onSubmit={addPerson}>
-        <label>
+        <label htmlFor='fullNameInput'>
           Full Name:
           <input
+            id='fullNameInput'
             value={newPersonName}
             onChange={handlePersonNameChange}
           />
         </label>
-        <label>
+        <label htmlFor='selectParent1'>
+          choose parent 1:
+          <select value={newPersonParent1} onChange={(e) => setNewPersonParent1(e.target.value)}>
+            <option />
+            {currentListOfPeople.map((person => {
+              return <option key={`parent1-list-${person.id}`} value={person.id}>{person.name}</option>
+            }))}
+            <option value='parent not listed'>parent not listed</option>
+          </select>
+        </label>
+        <label htmlFor='selectParent2'>
+          choose parent 2:
+          <select value={newPersonParent2} onChange={(e) => setNewPersonParent2(e.target.value)}>
+            <option />
+            {currentListOfPeople.map((person => {
+              return <option key={`parent2-list-${person.id}`} value={person.id}>{person.name}</option>
+            }))}
+            <option value='parent not listed'>parent not listed</option>
+          </select>
+        </label>
+        <label htmlFor='bioInput'>
           <div>Bio:</div>
           <textarea
+            id='bioInput'
             value={newPersonBio}
             onChange={handlePersonBioChange}
           />
