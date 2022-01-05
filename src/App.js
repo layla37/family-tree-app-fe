@@ -1,23 +1,35 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Person from './components/Person';
-import Notification from './components/Notification';
 import Footer from './components/Footer';
 import FamilyMemberForm from './components/FamilyMemberForm';
-import { FamilyTree } from './components/FamilyTree';
-import peopleRequest from './services/people';
+import FamilyMemberList from './components/FamilyMemberList';
+import FamilyTree from './components/FamilyTree';
+import { peopleRequest } from './services/people';
 
 const App = () => {
   const [people, setPeople] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
 
-  useEffect(() => {
+  const getCurrentListOfPeople = () => {
     peopleRequest
       .getAll()
       .then(initialPeople => {
       setPeople(initialPeople);
+      console.log(initialPeople)
     })
+  };
+
+  useEffect(() => {
+    getCurrentListOfPeople();
   }, []);
+
+  const removePerson = (personId) => {
+    peopleRequest
+      .deletePerson(personId)
+      .then(() => {
+        getCurrentListOfPeople();
+      });
+  };
+
 
   // const getPersonPath = (name) => {
   //   if (typeof name !== 'string') return;
@@ -36,18 +48,7 @@ const App = () => {
 
       <Switch>
         <Route path='/family-members'>
-          <div>
-            <h1>Family Members</h1>
-            <Notification message={errorMessage} />  
-            <ul>
-              {people.map(person => 
-                  <Person
-                    key={person.id}
-                    person={person}
-                  />
-              )}
-            </ul>
-          </div>
+         <FamilyMemberList people={people} removePerson={removePerson} />
         </Route>
         <Route path='/family-tree'>
           <FamilyTree />
@@ -55,7 +56,7 @@ const App = () => {
         <Route path='/add-new-family-member'>
           <div>
             <h2>Add Family Member</h2>
-            <FamilyMemberForm addPersonToList={setPeople} currentListOfPeople={people} />
+            <FamilyMemberForm getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
           </div>
         </Route>
       </Switch>

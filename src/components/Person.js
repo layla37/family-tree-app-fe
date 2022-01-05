@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import peopleRequest from '../services/people';
+import { peopleRequest } from './../services/people';
 
-const Person = ({ person }) => {
+const Person = ({ person, removePerson }) => {
   const [parents, setParents] = useState([]);
   
   const getParentsArray = () => {
@@ -9,7 +9,12 @@ const Person = ({ person }) => {
       await peopleRequest
       .get(id)
         .then(returnedPerson => {
-          setParents((parents) => parents.concat({name: returnedPerson.name, id: returnedPerson.id}));
+          if (returnedPerson) {
+            setParents((parents) => parents.concat({name: returnedPerson.name, id: returnedPerson.id}));
+          } else {
+            console.error('parent not found in DB with ID of ', id )
+          }
+          
       })
     });
   }
@@ -20,6 +25,10 @@ const Person = ({ person }) => {
     }
   }, []);
 
+  const onClick = (personId) => {
+    removePerson(personId);
+  }
+
   return (
     <li className='person'>
       <div>Name: {person.name}</div>
@@ -29,6 +38,7 @@ const Person = ({ person }) => {
         })}
       </div>
       <div>Bio: {person.bio}</div>
+      <button onClick={() => onClick(person.id)}>Delete {person.name} from DB</button>
     </li>
   )
 }

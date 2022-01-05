@@ -100,7 +100,7 @@ function Nodes() {
   );
 }
 
-export function FamilyTree() {
+export default function FamilyTree() {
   return (
     <div className="pane" id="node-pane">
       <Nodes></Nodes>

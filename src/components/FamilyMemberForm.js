@@ -1,33 +1,31 @@
 import { useState, useEffect } from 'react';
-import peopleRequest from '../services/people';
+import { peopleRequest } from './../services/people';
+
+const PARENT_NOT_IN_DB = 'parent not listed';
 
 const FamilyMemberForm = ({
-  addPersonToList,
+  getUpdatedListOfPeople,
   currentListOfPeople
   }) => {
   const [newPersonName, setNewPersonName] = useState('');
   const [newPersonBio, setNewPersonBio] = useState('');
   const [newPersonParent1, setNewPersonParent1] = useState('');
   const [newPersonParent2, setNewPersonParent2] = useState('');
-  const [newPersonPartner, setNewPersonPartner] = useState('');
+  const [newPersonPartners, setNewPersonPartners] = useState([]);
   const [newPersonChildren, setNewPersonChildren] = useState([]);
 
   const resetNewPersonFields = () => {
     setNewPersonName('');
     setNewPersonBio('');
-    setNewPersonPartner('');
+    setNewPersonPartners([]);
     setNewPersonChildren([]);
   };
 
   const getParentsArray = () => {
     const parentsArray = [];
 
-    if (newPersonParent1) parentsArray.push(newPersonParent1);
-    if (newPersonParent2) parentsArray.push(newPersonParent2);
-
-    if (parentsArray.length === 0) {
-       return null;
-    }
+    if (newPersonParent1 && newPersonParent1 !== PARENT_NOT_IN_DB) parentsArray.push(newPersonParent1);
+    if (newPersonParent2 && newPersonParent2 !== PARENT_NOT_IN_DB) parentsArray.push(newPersonParent2);
 
     return parentsArray;
   }
@@ -40,15 +38,15 @@ const FamilyMemberForm = ({
       bio: newPersonBio,
       parents: getParentsArray(), // via dropdown list of names of people already added to DB
       children: newPersonChildren, // via dropdown list of names of people already added to DBc
-      partner: newPersonPartner
+      partners: newPersonPartners
     }
 
     peopleRequest
       .create(personObject)
         .then(returnedPerson => {
-          addPersonToList(currentListOfPeople.concat(returnedPerson));
+          getUpdatedListOfPeople();
           resetNewPersonFields();
-      })
+      });
   };
 
   const handlePersonNameChange = (event) => {
@@ -76,7 +74,7 @@ const FamilyMemberForm = ({
             {currentListOfPeople.map((person => {
               return <option key={`parent1-list-${person.id}`} value={person.id}>{person.name}</option>
             }))}
-            <option value='parent not listed'>parent not listed</option>
+            <option value={PARENT_NOT_IN_DB}>{PARENT_NOT_IN_DB}</option>
           </select>
         </label>
         <label htmlFor='selectParent2'>
