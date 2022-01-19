@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 import { peopleRequest } from './../services/people';
 
 const Person = ({ person, removePerson }) => {
@@ -25,20 +26,21 @@ const Person = ({ person, removePerson }) => {
     }
   }, []);
 
-  const onClick = (personId) => {
+  const deletePerson = (personId) => {
     removePerson(personId);
   }
 
   return (
     <li className='person'>
-      <div>Name: {person.name}</div>
+      <Link to={`/family-members/${person.url}`}>Name: {person.name}</Link>
       <div>Parents: 
         {parents.map(parent => {
           return <div key={`${person.id}-${parent.id}`}>{parent.name}</div>;
         })}
       </div>
       <div>Bio: {person.bio}</div>
-      <button onClick={() => onClick(person.id)}>Delete {person.name} from DB</button>
+      <button onClick={() => deletePerson(person.id)}>Delete {person.name} from DB</button>
+
     </li>
   )
 }

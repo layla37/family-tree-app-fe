@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import FamilyMemberForm from './components/FamilyMemberForm';
 import FamilyMemberList from './components/FamilyMemberList';
 import FamilyTree from './components/FamilyTree';
+import PersonPage from './components/PersonPage';
 import { peopleRequest } from './services/people';
 
 const App = () => {
@@ -47,9 +48,10 @@ const App = () => {
       </div>
 
       <Switch>
+        <Route path='/family-members/:name' component={PersonPage} />
         <Route path='/family-members'>
          <FamilyMemberList people={people} removePerson={removePerson} />
-        </Route>
+        </Route>      
         <Route path='/family-tree'>
           <FamilyTree />
         </Route>

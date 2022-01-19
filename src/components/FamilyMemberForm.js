@@ -30,6 +30,11 @@ const FamilyMemberForm = ({
     return parentsArray;
   }
 
+  const getPersonUrl = (name) => {
+    if (!newPersonName) return;
+    return newPersonName.trim().toLowerCase().replaceAll(' ', '-');
+  }
+
   const addPerson = (event) => {
     event.preventDefault();
     
@@ -38,7 +43,8 @@ const FamilyMemberForm = ({
       bio: newPersonBio,
       parents: getParentsArray(), // via dropdown list of names of people already added to DB
       children: newPersonChildren, // via dropdown list of names of people already added to DBc
-      partners: newPersonPartners
+      partners: newPersonPartners,
+      url: getPersonUrl(newPersonName)
     }
 
     peopleRequest
