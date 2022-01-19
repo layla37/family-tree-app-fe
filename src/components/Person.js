@@ -6,8 +6,8 @@ const Person = ({ person, removePerson }) => {
   const [parents, setParents] = useState([]);
   
   const getParentsArray = () => {
-    person.parents.forEach(async id => {
-      await peopleRequest
+    person.parents.forEach(id => {
+      peopleRequest
       .get(id)
         .then(returnedPerson => {
           if (returnedPerson) {
@@ -15,7 +15,6 @@ const Person = ({ person, removePerson }) => {
           } else {
             console.error('parent not found in DB with ID of ', id )
           }
-          
       })
     });
   }

@@ -33,10 +33,11 @@ const defaultElements = [];
 function elementsFromTree(people) {
   const elements = [];
   const partners = [];
+  const partnershipNodeIds = [];
 
   for (let i = 0; i < people.length; i++) {
     let currentPerson = people[i];
-    let hasPartner = currentPerson.partners != null && currentPerson.partners.length > 0;
+    let hasPartner = currentPerson.partners && currentPerson.partners.length > 0;
     // let hasNotBeenConnectedToPartnerYet = hasPartner && !partners.flat().includes(people[i].id);
     let PersonNode = {
       id: `${currentPerson.id}`,
@@ -46,53 +47,72 @@ function elementsFromTree(people) {
       // draggable: false
     };
     elements.push(PersonNode);
-    // build partnerships
+    // build partnership nodes
     //if (hasPartner && hasNotBeenConnectedToPartnerYet) {
-      if (hasPartner) {
-        currentPerson.partners.forEach((partner, partnerIndex) => {
-          
-          let partnershipNode = {
-            id: `p${currentPerson.id}-${currentPerson.partners[partnerIndex]}`,
-            type: "default",
-            data: { label: `${currentPerson.id} to ${currentPerson.partners[partnerIndex]} partnership` },
-            position: { x: i * 120, y: i * 120 },
-            // draggable: false
-          };
-          let flattenedPartnershipArray = partners.flat();
-          let partnershipNodeExists = flattenedPartnershipArray.includes(currentPerson.id) && flattenedPartnershipArray.includes(currentPerson.partners[partnerIndex]);
-          if (!partnershipNodeExists) {
-            partners.push([currentPerson.id, currentPerson.partners[partnerIndex]]);
-            elements.push(partnershipNode);
-          }
-          
-        });
-      
- 
+    if (hasPartner) {
+      currentPerson.partners.forEach((partner, partnerIndex) => {
+        
+        let partnershipNode = {
+          id: `partnership-${currentPerson.id}-${currentPerson.partners[partnerIndex]}`,
+          type: "default",
+          data: { label: `${currentPerson.id} to ${currentPerson.partners[partnerIndex]} partnership` },
+          position: { x: i * 120, y: i * 120 },
+          // draggable: false
+        };
+        let flattenedPartnershipArray = partners.flat();
+        let partnershipNodeExists = flattenedPartnershipArray.includes(currentPerson.id) && flattenedPartnershipArray.includes(currentPerson.partners[partnerIndex]);
+        if (!partnershipNodeExists) {
+          partnershipNodeIds.push(partnershipNode.id);
+          partners.push([currentPerson.id, currentPerson.partners[partnerIndex]]);
+          elements.push(partnershipNode);
+        }      
+      });
+    }
+  }
+
+  const getParentsPartnershipNodeId = (parentsIdArray) => {
+    // check partnershipNodeIds for parents IDs
+    return partnershipNodeIds.find(id => {
+      if (parentsIdArray.length === 1) {
+        return id.includes(parentsIdArray[0]);
+      } else {
+        return id.includes(parentsIdArray[0]) && id.includes(parentsIdArray[1]);
+      }
+    });
+  };
+
+  const findPartnershipNodeId = (personId, partnerId) => {
+    // check partnershipNodeIds for partner's ID and their ID
+    return partnershipNodeIds.find(id => {
+      return id.includes(personId) && id.includes(partnerId);
+    })
+  };
+
+   // edge creation logic
+   for (let i = 0; i < people.length; i++) {
+    if (people[i].parents.length > 0) {
+      // look for partnership node ID of parents
+      let parentsPartnershipNodeId = getParentsPartnershipNodeId(people[i].parents); 
+      let parentsPartnershipNodeToChildEdge = {
+        id: `parents${parentsPartnershipNodeId}-${people[i].id}`,
+        type: 'step',
+        source: `${people[i].id}`,
+        target: `${parentsPartnershipNodeId}`
+      };
+      elements.push(parentsPartnershipNodeToChildEdge);
+    }
+
+    if (people[i].partners && people[i].partners.length > 0) { // TODO: loop through the partners array to make our edges!
+      let partnershipNodeId = findPartnershipNodeId(people[i].id, people[i].partners[0]);
+      let partnershipEdge = {
+        id: `partnership-edge-${people[i].id}-${people[i].partners[0]}`,
+        source: `${people[i].id}`,
+        target: partnershipNodeId
+      }
+      elements.push(partnershipEdge);
     }
   }
   
-  // edge creation logic
-  for (let i = 0; i < people.length; i++) {
-    if (people[i].children) { // make sure not an empty array
-      let currentElement = {
-        id: `parent${people[i].id}-${people[i].children}`,
-        type: 'straight',
-        source: `${people[i].id}`,
-        target: `${people[i].children}`
-      };
-      elements.push(currentElement);
-    }
-    if (people[i].partners) { // TODO: loop through the partners array to make our edges!
-      // TODO filter out any duplicates of parntership IDs
-      let currentElement = {
-        id: `partner${people[i].id}-${people[i].partners[0]}`,
-        source: `${people[i].id}`,
-        target: `p${people[i].id}-${people[i].partners[0]}`
-      }
-        elements.push(currentElement);
-    }
-    // TODO edge from partner node to children. Try using {type: 'step'} for partner node to children edges
-  }
   return elements;
 }
 
