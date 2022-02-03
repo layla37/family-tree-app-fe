@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Footer from './components/Footer';
 import FamilyMemberForm from './components/FamilyMemberForm';
+import EditFamilyMemberForm from './components/EditFamilyMemberForm';
 import FamilyMemberList from './components/FamilyMemberList';
 import FamilyTree from './components/FamilyTree';
 import PersonPage from './components/PersonPage';
@@ -53,12 +54,18 @@ const App = () => {
          <FamilyMemberList people={people} removePerson={removePerson} />
         </Route>      
         <Route path='/family-tree'>
-          <FamilyTree />
+          <FamilyTree people={people} />
         </Route>
         <Route path='/add-new-family-member'>
           <div>
             <h2>Add Family Member</h2>
             <FamilyMemberForm getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
+          </div>
+        </Route>
+        <Route path='/edit-family-member'>
+          <div>
+            <h2>Edit Family Member</h2>
+            <EditFamilyMemberForm editPerson={true} getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
           </div>
         </Route>
       </Switch>

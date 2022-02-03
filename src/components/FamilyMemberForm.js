@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { peopleRequest } from './../services/people';
 
-const PARENT_NOT_IN_DB = 'parent not listed';
+const NOT_LISTED = 'person not listed';
 
 const FamilyMemberForm = ({
   getUpdatedListOfPeople,
@@ -11,23 +11,33 @@ const FamilyMemberForm = ({
   const [newPersonBio, setNewPersonBio] = useState('');
   const [newPersonParent1, setNewPersonParent1] = useState('');
   const [newPersonParent2, setNewPersonParent2] = useState('');
-  const [newPersonPartners, setNewPersonPartners] = useState([]);
+  const [newPersonPartner1, setNewPersonPartner1] = useState('');
   const [newPersonChildren, setNewPersonChildren] = useState([]);
 
   const resetNewPersonFields = () => {
     setNewPersonName('');
     setNewPersonBio('');
-    setNewPersonPartners([]);
+    setNewPersonPartner1('');
+    setNewPersonParent1('');
+    setNewPersonParent2('');
     setNewPersonChildren([]);
   };
 
   const getParentsArray = () => {
     const parentsArray = [];
 
-    if (newPersonParent1 && newPersonParent1 !== PARENT_NOT_IN_DB) parentsArray.push(newPersonParent1);
-    if (newPersonParent2 && newPersonParent2 !== PARENT_NOT_IN_DB) parentsArray.push(newPersonParent2);
+    if (newPersonParent1 && newPersonParent1 !== NOT_LISTED) parentsArray.push(newPersonParent1);
+    if (newPersonParent2 && newPersonParent2 !== NOT_LISTED) parentsArray.push(newPersonParent2);
 
     return parentsArray;
+  }
+
+  const getPartnersArray = () => {
+    const partnersArray = [];
+
+    if (setNewPersonPartner1 && setNewPersonPartner1 !== NOT_LISTED) partnersArray.push(setNewPersonPartner1);
+
+    return partnersArray;
   }
 
   const getPersonUrl = (name) => {
@@ -43,7 +53,7 @@ const FamilyMemberForm = ({
       bio: newPersonBio,
       parents: getParentsArray(), // via dropdown list of names of people already added to DB
       children: newPersonChildren, // via dropdown list of names of people already added to DBc
-      partners: newPersonPartners,
+      partners: getPartnersArray(),
       url: getPersonUrl(newPersonName)
     }
 
@@ -80,7 +90,7 @@ const FamilyMemberForm = ({
             {currentListOfPeople.map((person => {
               return <option key={`parent1-list-${person.id}`} value={person.id}>{person.name}</option>
             }))}
-            <option value={PARENT_NOT_IN_DB}>{PARENT_NOT_IN_DB}</option>
+            <option value={NOT_LISTED}>{NOT_LISTED}</option>
           </select>
         </label>
         <label htmlFor='selectParent2'>
@@ -91,6 +101,16 @@ const FamilyMemberForm = ({
               return <option key={`parent2-list-${person.id}`} value={person.id}>{person.name}</option>
             }))}
             <option value='parent not listed'>parent not listed</option>
+          </select>
+        </label>
+        <label htmlFor='selectPartner'>
+          choose partner:
+          <select value={newPersonPartner1} onChange={(e) => setNewPersonPartner1(e.target.value)}>
+            <option />
+            {currentListOfPeople.map((person => {
+              return <option key={`partner1-list-${person.id}`} value={person.id}>{person.name}</option>
+            }))}
+            <option value={NOT_LISTED}>{NOT_LISTED}</option>
           </select>
         </label>
         <label htmlFor='bioInput'>

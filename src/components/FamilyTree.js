@@ -3,6 +3,22 @@ import { useEffect, useState } from 'react';
 
 const PEOPLE = [
   {
+    "name": "Bill Jones",
+    "id": 100,
+    "parents": [],
+    "partners": [101],
+    "children": [1],
+    "bio": "TBD lolz"
+  },
+  {
+    "name": "Jill Jones",
+    "id": 101,
+    "parents": [],
+    "partners": [100],
+    "children": [1],
+    "bio": "TBD lolz"
+  },
+  {
     "name": "Danielle Jones",
     "id": 1,
     "parents": [100, 101],
@@ -25,6 +41,14 @@ const PEOPLE = [
     "partners": [],
     "children": [],
     "bio": "coolest person ever"
+  },
+  {
+    "name": "john Taylor",
+    "id": 4,
+    "parents": [1, 2],
+    "partners": [],
+    "children": [],
+    "bio": "2nd coolest person ever"
   }
 ];
 
@@ -117,12 +141,12 @@ function elementsFromTree(people) {
 }
 
 
-export default function FamilyTree() {
+export default function FamilyTree({ people }) {
   const [elements, setElements] = useState(defaultElements);
-
+console.log("people = " , people)
   useEffect(() => {
-    setElements(elementsFromTree(PEOPLE));
-  }, []);
+    setElements(elementsFromTree(people));
+  }, [people]);
   return (
     <div className="pane" id="node-pane">
       <ReactFlow elements={elements} />
