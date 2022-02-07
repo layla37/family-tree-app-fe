@@ -1,128 +1,190 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { peopleRequest } from './../services/people';
 
 const NOT_LISTED = 'person not listed';
 
 const FamilyMemberForm = ({
   getUpdatedListOfPeople,
-  currentListOfPeople
+  currentListOfPeople,
+  editPerson = false
   }) => {
-  const [newPersonName, setNewPersonName] = useState('');
-  const [newPersonBio, setNewPersonBio] = useState('');
-  const [newPersonParent1, setNewPersonParent1] = useState('');
-  const [newPersonParent2, setNewPersonParent2] = useState('');
-  const [newPersonPartner1, setNewPersonPartner1] = useState('');
-  const [newPersonChildren, setNewPersonChildren] = useState([]);
+  const [personToUpdate, setPersonToUpdate] = useState('');
+  const [personName, setPersonName] = useState('');
+  const [personBio, setPersonBio] = useState('');
+  const [personParent1, setPersonParent1] = useState('');
+  const [personParent2, setPersonParent2] = useState('');
+  const [personPartner1, setPersonPartner1] = useState('');
+  const [personChildren, setPersonChildren] = useState([]);
 
-  const resetNewPersonFields = () => {
-    setNewPersonName('');
-    setNewPersonBio('');
-    setNewPersonPartner1('');
-    setNewPersonParent1('');
-    setNewPersonParent2('');
-    setNewPersonChildren([]);
+  const previousEditPersonRef = useRef(editPerson);
+
+  const resetPersonFields = () => {
+    setPersonName('');
+    setPersonBio('');
+    setPersonPartner1('');
+    setPersonParent1('');
+    setPersonParent2('');
+    setPersonChildren([]);
   };
 
+  useEffect(() => {
+    if (previousEditPersonRef.current !== editPerson) {
+      resetPersonFields();
+      previousEditPersonRef.current = editPerson;
+    }
+  }, [editPerson]);
+
+  useEffect(() => {
+    if (personToUpdate) {
+      // pre-populate all fields with info from DB
+      const person = currentListOfPeople.find((person) => {
+        return person.id === personToUpdate;
+      });
+
+      if (!person){
+        console.log('person not found in DB');
+        return;
+      } 
+      if (person.name) setPersonName(person.name);
+      if (person.bio) setPersonBio(person.bio);
+      if (person.partners && person.partners[0]) setPersonPartner1(person.partners[0]);
+      if (person.children && person.children.length > 0) setPersonChildren(person.children);
+      if (person.parents && person.parents[0]) setPersonParent1(person.parents[0]);
+      if (person.parents && person.parents[1]) setPersonParent2(person.parents[1]);
+    }
+  }, [personToUpdate, currentListOfPeople]);
+
+  
   const getParentsArray = () => {
     const parentsArray = [];
 
-    if (newPersonParent1 && newPersonParent1 !== NOT_LISTED) parentsArray.push(newPersonParent1);
-    if (newPersonParent2 && newPersonParent2 !== NOT_LISTED) parentsArray.push(newPersonParent2);
+    if (personParent1 && personParent1 !== NOT_LISTED) parentsArray.push(personParent1);
+    if (personParent2 && personParent2 !== NOT_LISTED) parentsArray.push(personParent2);
 
     return parentsArray;
   }
 
   const getPartnersArray = () => {
     const partnersArray = [];
-
-    if (setNewPersonPartner1 && setNewPersonPartner1 !== NOT_LISTED) partnersArray.push(setNewPersonPartner1);
-
+    if (personPartner1 && personPartner1 !== NOT_LISTED) partnersArray.push(personPartner1);
     return partnersArray;
   }
 
   const getPersonUrl = (name) => {
-    if (!newPersonName) return;
-    return newPersonName.trim().toLowerCase().replaceAll(' ', '-');
+    if (!personName) return;
+    return personName.trim().toLowerCase().replaceAll(' ', '-');
   }
 
   const addPerson = (event) => {
     event.preventDefault();
     
     const personObject = {
-      name: newPersonName,
-      bio: newPersonBio,
-      parents: getParentsArray(), // via dropdown list of names of people already added to DB
-      children: newPersonChildren, // via dropdown list of names of people already added to DBc
+      name: personName,
+      bio: personBio,
+      parents: getParentsArray(),
+      children: personChildren,
       partners: getPartnersArray(),
-      url: getPersonUrl(newPersonName)
+      url: getPersonUrl(personName)
     }
 
     peopleRequest
       .create(personObject)
         .then(returnedPerson => {
           getUpdatedListOfPeople();
-          resetNewPersonFields();
+          resetPersonFields();
+      });
+  };
+
+  const updatePerson = (event, id) => {
+    event.preventDefault();
+
+    const personObject = {
+      name: personName,
+      bio: personBio,
+      parents: getParentsArray(),
+      children: personChildren,
+      partners: getPartnersArray(),
+      url: getPersonUrl(personName)
+    }
+
+    peopleRequest
+      .update(id, personObject)
+        .then(returnedPerson => {
+          getUpdatedListOfPeople();
+          resetPersonFields();
       });
   };
 
   const handlePersonNameChange = (event) => {
-    setNewPersonName(event.target.value);
+    setPersonName(event.target.value);
   };
 
   const handlePersonBioChange = (event) => {
-    setNewPersonBio(event.target.value);
+    setPersonBio(event.target.value);
   };
 
   return (
-    <form onSubmit={addPerson}>
-        <label htmlFor='fullNameInput'>
-          Full Name:
-          <input
-            id='fullNameInput'
-            value={newPersonName}
-            onChange={handlePersonNameChange}
-          />
-        </label>
-        <label htmlFor='selectParent1'>
-          choose parent 1:
-          <select value={newPersonParent1} onChange={(e) => setNewPersonParent1(e.target.value)}>
+    <form onSubmit={editPerson ? (e) => updatePerson(e, personToUpdate) : addPerson}>
+      {editPerson && (
+        <label htmlFor='selectPersonToEdit'>
+          Choose person to edit:
+          <select id='selectPersonToEdit' value={personToUpdate} onChange={(e) => setPersonToUpdate(e.target.value)}>
             <option />
             {currentListOfPeople.map((person => {
-              return <option key={`parent1-list-${person.id}`} value={person.id}>{person.name}</option>
+              return <option key={`person-to-update-list-${person.id}`} value={person.id}>{person.name}</option>
             }))}
-            <option value={NOT_LISTED}>{NOT_LISTED}</option>
           </select>
         </label>
-        <label htmlFor='selectParent2'>
-          choose parent 2:
-          <select value={newPersonParent2} onChange={(e) => setNewPersonParent2(e.target.value)}>
-            <option />
-            {currentListOfPeople.map((person => {
-              return <option key={`parent2-list-${person.id}`} value={person.id}>{person.name}</option>
-            }))}
-            <option value='parent not listed'>parent not listed</option>
-          </select>
+
+      )}
+      <label htmlFor='fullNameInput'>
+        Full Name:
+        <input
+          id={editPerson ? 'edit-fullNameInput' : 'fullNameInput'}
+          value={personName}
+          onChange={handlePersonNameChange}
+        />
+      </label>
+      <label htmlFor='selectParent1'>
+        choose parent 1:
+        <select value={personParent1} onChange={(e) => setPersonParent1(e.target.value)}>
+          <option />
+          {currentListOfPeople.map((person => {
+            return <option key={`parent1-list-${person.id}`} value={person.id}>{person.name}</option>
+          }))}
+          <option value={NOT_LISTED}>{NOT_LISTED}</option>
+        </select>
+      </label>
+      <label htmlFor='selectParent2'>
+        choose parent 2:
+        <select value={personParent2} onChange={(e) => setPersonParent2(e.target.value)}>
+          <option />
+          {currentListOfPeople.map((person => {
+            return <option key={`parent2-list-${person.id}`} value={person.id}>{person.name}</option>
+          }))}
+          <option value='parent not listed'>parent not listed</option>
+        </select>
+      </label>
+      <label htmlFor='selectPartner'>
+        choose partner:
+        <select value={personPartner1} onChange={(e) => setPersonPartner1(e.target.value)}>
+          <option />
+          {currentListOfPeople.map((person => {
+            return <option key={`partner1-list-${person.id}`} value={person.id}>{person.name}</option>
+          }))}
+          <option value={NOT_LISTED}>{NOT_LISTED}</option>
+        </select>
+      </label>
+      <label htmlFor='bioInput'>
+        <div>Bio:</div>
+        <textarea
+          id='bioInput'
+          value={personBio}
+          onChange={handlePersonBioChange}
+        />
         </label>
-        <label htmlFor='selectPartner'>
-          choose partner:
-          <select value={newPersonPartner1} onChange={(e) => setNewPersonPartner1(e.target.value)}>
-            <option />
-            {currentListOfPeople.map((person => {
-              return <option key={`partner1-list-${person.id}`} value={person.id}>{person.name}</option>
-            }))}
-            <option value={NOT_LISTED}>{NOT_LISTED}</option>
-          </select>
-        </label>
-        <label htmlFor='bioInput'>
-          <div>Bio:</div>
-          <textarea
-            id='bioInput'
-            value={newPersonBio}
-            onChange={handlePersonBioChange}
-          />
-         </label>
-        <button type="submit">save</button>
-      </form>  
+      <button type="submit">{editPerson ? 'update' : 'save'}</button>
+    </form>  
   );
 };
 

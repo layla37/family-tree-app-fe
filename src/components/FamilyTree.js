@@ -1,56 +1,56 @@
 import ReactFlow from "react-flow-renderer";
 import { useEffect, useState } from 'react';
 
-const PEOPLE = [
-  {
-    "name": "Bill Jones",
-    "id": 100,
-    "parents": [],
-    "partners": [101],
-    "children": [1],
-    "bio": "TBD lolz"
-  },
-  {
-    "name": "Jill Jones",
-    "id": 101,
-    "parents": [],
-    "partners": [100],
-    "children": [1],
-    "bio": "TBD lolz"
-  },
-  {
-    "name": "Danielle Jones",
-    "id": 1,
-    "parents": [100, 101],
-    "partners": [2],
-    "children": [3],
-    "bio": "TBD lolz"
-  },
-  {
-    "name": "Christopher Guzman",
-    "id": 2,
-    "parents": [200, 201],
-    "partners": [1],
-    "children": [3],
-    "bio": "blah blah"
-  },
-  {
-    "name": "Stephanie Taylor",
-    "id": 3,
-    "parents": [1, 2],
-    "partners": [],
-    "children": [],
-    "bio": "coolest person ever"
-  },
-  {
-    "name": "john Taylor",
-    "id": 4,
-    "parents": [1, 2],
-    "partners": [],
-    "children": [],
-    "bio": "2nd coolest person ever"
-  }
-];
+// const PEOPLE = [
+//   {
+//     "name": "Bill Jones",
+//     "id": 100,
+//     "parents": [],
+//     "partners": [101],
+//     "children": [1],
+//     "bio": "TBD lolz"
+//   },
+//   {
+//     "name": "Jill Jones",
+//     "id": 101,
+//     "parents": [],
+//     "partners": [100],
+//     "children": [1],
+//     "bio": "TBD lolz"
+//   },
+//   {
+//     "name": "Danielle Jones",
+//     "id": 1,
+//     "parents": [100, 101],
+//     "partners": [2],
+//     "children": [3],
+//     "bio": "TBD lolz"
+//   },
+//   {
+//     "name": "Christopher Guzman",
+//     "id": 2,
+//     "parents": [200, 201],
+//     "partners": [1],
+//     "children": [3],
+//     "bio": "blah blah"
+//   },
+//   {
+//     "name": "Stephanie Taylor",
+//     "id": 3,
+//     "parents": [1, 2],
+//     "partners": [],
+//     "children": [],
+//     "bio": "coolest person ever"
+//   },
+//   {
+//     "name": "john Taylor",
+//     "id": 4,
+//     "parents": [1, 2],
+//     "partners": [],
+//     "children": [],
+//     "bio": "2nd coolest person ever"
+//   }
+// ];
 
 const defaultElements = [];
 

@@ -12,6 +12,10 @@ a {
   margin: 16px;
 }
 
+li.person {
+  margin-bottom: 30px;
+}
+
 .person {
   color: grey;
   padding-top: 3px;
