@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { peopleRequest } from './../services/people';
 
 const NOT_LISTED = 'person not listed';
@@ -16,8 +16,6 @@ const FamilyMemberForm = ({
   const [personPartner1, setPersonPartner1] = useState('');
   const [personChildren, setPersonChildren] = useState([]);
 
-  const previousEditPersonRef = useRef(editPerson);
-
   const resetPersonFields = () => {
     setPersonName('');
     setPersonBio('');
@@ -26,13 +24,6 @@ const FamilyMemberForm = ({
     setPersonParent2('');
     setPersonChildren([]);
   };
-
-  useEffect(() => {
-    if (previousEditPersonRef.current !== editPerson) {
-      resetPersonFields();
-      previousEditPersonRef.current = editPerson;
-    }
-  }, [editPerson]);
 
   useEffect(() => {
     if (personToUpdate) {

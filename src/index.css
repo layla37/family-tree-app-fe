@@ -57,3 +57,9 @@ li.person {
       height: 69vh;
   max-height: 69vh;
 }
+
+.partnership-node {
+  height: 1px;
+  width: 1px;
+  background-color: blue;
+}

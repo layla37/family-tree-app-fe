@@ -79,6 +79,7 @@ function elementsFromTree(people) {
         let partnershipNode = {
           id: `partnership-${currentPerson.id}-${currentPerson.partners[partnerIndex]}`,
           type: "default",
+          className: "partnership-node",
           data: { label: `${currentPerson.id} to ${currentPerson.partners[partnerIndex]} partnership` },
           position: { x: i * 120, y: i * 120 },
           // draggable: false

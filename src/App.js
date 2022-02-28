@@ -58,13 +58,13 @@ const App = () => {
         <Route path='/add-new-family-member'>
           <div>
             <h2>Add Family Member</h2>
-            <FamilyMemberForm getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
+            <FamilyMemberForm key='add-new-person' getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
           </div>
         </Route>
         <Route path='/edit-family-member'>
           <div>
             <h2>Edit Family Member</h2>
-            <FamilyMemberForm editPerson={true} getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
+            <FamilyMemberForm key='edit-person' editPerson={true} getUpdatedListOfPeople={getCurrentListOfPeople} currentListOfPeople={people} />
           </div>
         </Route>
       </Switch>
